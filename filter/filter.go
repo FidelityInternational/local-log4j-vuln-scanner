@@ -46,11 +46,27 @@ func IsVulnerableClass(buf []byte, filename string, v Vulnerabilities) *FileInfo
 		}
 	}
 
-	if v&CVE_2022_23307 != 0  &&
+	if v&CVE_2022_23307 != 0 &&
 		strings.Contains(strings.ToLower(filepath.Base(filename)), "chainsaw/main.") {
 		return &FileInfo{
 			"Chainsaw Main.class found",
 			filepath.Base(filename), CVE_2022_23307,
+		}
+	}
+
+	if v&CVE_2022_23305 != 0 &&
+		strings.Contains(strings.ToLower(filepath.Base(filename)), "jdbc/jdbcappender.") {
+		return &FileInfo{
+			"jdbc JDBCAppender.class found",
+			filepath.Base(filename), CVE_2022_23305,
+		}
+	}
+
+	if v&CVE_2022_23302 != 0 &&
+		strings.Contains(strings.ToLower(filepath.Base(filename)), "net/jmssink.") {
+		return &FileInfo{
+			"net JMSSink.class found",
+			filepath.Base(filename), CVE_2022_23302,
 		}
 	}
 
@@ -66,6 +82,12 @@ func (v Vulnerabilities) String() string {
 	}
 	if v&CVE_2021_44228 != 0 {
 		tags = append(tags, "CVE-2021-44228")
+	}
+	if v&CVE_2022_23302 != 0 {
+		tags = append(tags, "CVE_2022_23302")
+	}
+	if v&CVE_2022_23305 != 0 {
+		tags = append(tags, "CVE_2022_23305")
 	}
 	if v&CVE_2022_23307 != 0 {
 		tags = append(tags, "CVE_2022_23307")
@@ -88,6 +110,10 @@ func (v *Vulnerabilities) Set(s string) error {
 		switch strings.Trim(tag, " ") {
 		case "CVE-2019-17571":
 			*v |= CVE_2019_17571
+		case "CVE_2022_23302":
+			*v |= CVE_2022_23302
+		case "CVE_2022_23305":
+			*v |= CVE_2022_23305
 		case "CVE_2022_23307":
 			*v |= CVE_2022_23307
 		case "CVE-2021-44228":
@@ -107,13 +133,15 @@ func (v *Vulnerabilities) Set(s string) error {
 }
 
 const (
-	CheckDefaultVulnerabilities Vulnerabilities = CVE_2019_17571 | CVE_2021_44228 | CVE_2021_45046 | CVE_2022_23307
+	CheckDefaultVulnerabilities Vulnerabilities = CVE_2019_17571 | CVE_2021_44228 | CVE_2021_45046 | CVE_2022_23307 | CVE_2022_23302 | CVE_2022_23305
 	CheckAllVulnerabilities     Vulnerabilities = 0xff
 )
 
 const (
 	// v1.x
 	CVE_2019_17571 Vulnerabilities = 1 << iota
+	CVE_2022_23302
+	CVE_2022_23305
 	CVE_2022_23307
 	// v2.x
 	CVE_2021_44228
@@ -247,6 +275,42 @@ var vulnVersions = map[string]FileInfo{
 
 	"1ac1e0ce33feca95834596faceb3a5b042b2a0c4d612c0e6f5045068bab89cd2": FileInfo{
 		"log4j 2.17.0", "DataSourceConnectionSource.class", CVE_2021_44832},
+
+	"ff44fb14a1846357cd4d1b2d332046ae3de6ee4ecdb5f695e0f529bb8cc11cb3": FileInfo{
+		"log4j 1.1.3", "JMSSink.class", CVE_2022_23302},
+	"f403b8a4d318434cc3d63617f3ce94d51be66cfd863e1fbaab871ddc7c720f74": FileInfo{
+		"log4j 1.2.11", "JMSSink.class", CVE_2022_23302},
+	"aaa76e09c49d4b2fcc5116e41d04f34e7fd47c770675f555a7815ffc4cab35e7": FileInfo{
+		"log4j 1.2.12", "JMSSink.class", CVE_2022_23302},
+	"7b2591857f0a94f57971ea32c27a30ceb0e1081b156e04112263b6e278859ee7": FileInfo{
+		"log4j 1.2.6-1.2.7, 1.2.9, 1.2.13-1.2.14", "JMSSink.class", CVE_2022_23302},
+	"5e1f3a5e440009f2da22a94dfe9d8f3a28362a5efcb5f34242bcf8309cbb5b8e": FileInfo{
+		"log4j 1.2.15", "JMSSink.class", CVE_2022_23302},
+	"4ff07766fab0ec8f76039bbdbf100942cf2dae483f0c11fca8c22de14d7d3100": FileInfo{
+		"log4j 1.2.16", "JMSSink.class", CVE_2022_23302},
+	"8a212cda2bd1573eaf5dc94c8119d20c7342cbe14952aaedff5c2feb937cca6d": FileInfo{
+		"log4j 1.2.17", "JMSSink.class", CVE_2022_23302},
+	"01acc3499236887d281537d35a8d24f73cd30f218ae56635b101662dd3642ef2": FileInfo{
+		"log4j 1.2.4-1.2.5", "JMSSink.class", CVE_2022_23302},
+	"960bde885d6abb0420a13b3298d6939ef3e7a1933c5d92a7ea42f8dfa49e32b7": FileInfo{
+		"log4j 1.2.8", "JMSSink.class", CVE_2022_23302},
+
+	"c54d3bd535ffeee3382d1933197543061a14a230b75cf4909b545c3041663ab8": FileInfo{
+		"log4j 1.2.11, 1.2.15", "JDBCAppender.class", CVE_2022_23305},
+	"bd5fff151bae71012114d02092dc9de2be0b761f4adf95feda507d1390390399": FileInfo{
+		"log4j 1.2.12", "JDBCAppender.class", CVE_2022_23305},
+	"6b862973f6afeba26671b4059cea23d23378683a8e4c2dea4486ca7a3bf3e952": FileInfo{
+		"log4j 1.2.13-1.2.14", "JDBCAppender.class", CVE_2022_23305},
+	"32b59bfe4f022b1d455b451f41286b2090be1e35bda9fa45447d5b960ba641a9": FileInfo{
+		"log4j 1.2.16", "JDBCAppender.class", CVE_2022_23305},
+	"baa240a4c426fc5370599ba965e1b8ac57e90280014956f3be50bc609f344f02": FileInfo{
+		"log4j 1.2.17", "JDBCAppender.class", CVE_2022_23305},
+	"78920564a3661eca667c4856bb513842a0a084d4c073472488171d22e9a159d5": FileInfo{
+		"log4j 1.2.4-1.2.7", "JDBCAppender.class", CVE_2022_23305},
+	"e1c059cb4cf6e0359cd861a3cbd41f3f57c54400fa7b70cbf678be9bb847b42c": FileInfo{
+		"log4j 1.2.8", "JDBCAppender.class", CVE_2022_23305},
+	"003dc54c53ed3395810cdb83b25e429c88e86bcd9a59b1c5dd364b43753d6c41": FileInfo{
+		"log4j 1.2.9", "JDBCAppender.class", CVE_2022_23305},
 
 	"fb288e8015a971b16af5ab8d655b22f261276291aec8b1b40fdc2f2cddabd5fa": FileInfo{
 		"log4j 1.2.4-1.2.7", "Main.class", CVE_2022_23307},
